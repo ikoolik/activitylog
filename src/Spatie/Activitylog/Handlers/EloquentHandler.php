@@ -18,13 +18,18 @@ class EloquentHandler implements ActivitylogHandlerInterface
      */
     public function log($text, $userId = '', $attributes = [])
     {
-        Activity::create(
-            [
-                'text' => $text,
-                'user_id' => ($userId == '' ? null : $userId),
-                'ip_address' => $attributes['ipAddress'],
-            ]
-        );
+        $activity = new Activity([
+            'text' => $text,
+            'user_id' => ($userId == '' ? null : $userId),
+            'ip_address' => $attributes['ipAddress'],
+        ]);
+
+        if(!is_null($attributes['reference'])) {
+            $activity->reference_id = $attributes['reference']->id;
+            $activity->reference = get_class($attributes['reference']);
+        }
+
+        $activity->save();
 
         return true;
     }

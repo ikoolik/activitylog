@@ -4,6 +4,7 @@ namespace Spatie\Activitylog;
 
 use Illuminate\Config\Repository;
 use Illuminate\Contracts\Auth\Guard;
+use Illuminate\Database\Eloquent\Model;
 use Spatie\Activitylog\Handlers\BeforeHandler;
 use Spatie\Activitylog\Handlers\DefaultLaravelHandler;
 use Request;
@@ -46,10 +47,11 @@ class ActivitylogSupervisor
      *
      * @param $text
      * @param string $userId
+     * @param Model $reference
      *
      * @return bool
      */
-    public function log($text, $userId = '')
+    public function log($text, $userId = '', Model $reference = null)
     {
         $userId = $this->normalizeUserId($userId);
 
@@ -60,7 +62,7 @@ class ActivitylogSupervisor
         $ipAddress = Request::getClientIp();
 
         foreach ($this->logHandlers as $logHandler) {
-            $logHandler->log($text, $userId, compact('ipAddress'));
+            $logHandler->log($text, $userId, compact('ipAddress', 'reference'));
         }
 
         return true;
