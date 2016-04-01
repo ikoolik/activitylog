@@ -9,14 +9,13 @@ trait LogsActivity
     protected static function bootLogsActivity()
     {
         foreach (static::getRecordActivityEvents() as $eventName) {
-            static::$eventName(function (LogsActivityInterface $model) use ($eventName) {
-
+            static::registerModelEvent($eventName, function (LogsActivityInterface $model) use ($eventName) {
                 $message = $model->getActivityDescriptionForEvent($eventName);
 
                 if ($message != '') {
                     Activity::log($message, null, $model);
                 }
-            });
+            }, 0);
         }
     }
 
